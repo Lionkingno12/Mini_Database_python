@@ -1,0 +1,29 @@
+import struct
+object={
+    "name":'astitva',
+    'id':12
+}
+#1
+name='arya'
+id=75
+#2
+name1='astitva'
+id=89
+utf_code=name.encode('utf-8')
+print(list( utf_code ))
+length=len(utf_code)
+print(length)
+bytes_length=struct.pack('>i',length)
+print(bytes_length)
+bytes_id=struct.pack('>i',id)
+print(bytes_id)
+combined=bytes_id+bytes_length+utf_code
+print(combined)
+#desenrialization
+deutf_code=utf_code.decode('utf-8')
+print(deutf_code)
+debytes_length=struct.unpack('>i',bytes_length)
+print(debytes_length)
+print(debytes_length[0])
+debytes_id=struct.unpack('>i',bytes_id)
+print(debytes_id)
