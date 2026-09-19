@@ -63,10 +63,62 @@ def page_insert(value,page):
     #cell
     page[free_space_end-length:free_space_end]=bytes_value
 
+#update the  value
+def page_update(update_value,target,page):
+    number_of_slot=st.unpack('>H',page[0:2])[0]
+    slot_number=0
+    word=''
+    found=False
+    while slot_number<number_of_slot and found==False:
+        start=10+(slot_number*6)
+        slot=st.unpack('>Hi',page[start:start+6])
+        length=slot[0]
+        offset=slot[1]
+        word=page[offset:offset+length].decode('utf-8')
+        if word==target:
+            found=True
+        else:
+            slot_number+=1
+    if found:
+        #three condition can happen
+        start=10+(slot_number*6)
+        slot=st.unpack('>Hi',page[start:start+6])
+        length=slot[0]
+        offset=slot[1]
+        free_space_end=st.unpack('>i',page[6:10])[0]
+        free_space_start=st.unpack('>i',page[2:6])[0]
+
+        #if lenght of new is smaller of length is bigger or length is equal
+
+        bytes_update_value=update_value.encode('utf-8')
+        length_update_value=len(bytes_update_value)
+        if length_update_value>length:
+            if  ( free_space_end-free_space_start )<length_update_value:
+                print(f"not enough space | space required: {length_update_value} | space remained: {free_space_end-free_space_start}")
+                return
+            offset=free_space_end-length_update_value
+            length=length_update_value
+            bytes_offset=st.pack('>i',offset)
+            bytes_length=st.pack('>H',length)
+            page[start:start+6]=bytes_length+bytes_offset
+            page[offset:offset+length]=bytes_update_value
+            bytes_space_end=st.pack('>i',offset)
+            page[6:10]=bytes_space_end
+            print('updated the data on new bytes')
+            print(slot_number,length_update_value,offset)
+        else:
+                page[offset:offset+length_update_value]=bytes_update_value
+                bytes_length=st.pack('>H',length_update_value)
+                bytes_offset=st.pack('>i',offset)
+                page[start:start+6]=bytes_length+bytes_offset
+                print('update the data on old bytes')
+                print(slot_number,length_update_value,offset)
+    else:
+        print('your update value is not found ')
 page_insert('astitva',page_100)
 page_insert('arya',page_100)
 page_insert('abcdefghijklmnopqrstuvwxyz',page_100)
-page_insert('ashfdhaiufhidsuhfuas',page_100)
+# page_insert('ashfdhaiufhidsuhfuas',page_100)
 page_insert('ary',page_100)
 start=st.unpack('>i' ,page_100[2:6] )[0]
 end=st.unpack('>i', page_100[6:10] )[0]
@@ -77,5 +129,10 @@ print(end)
 print(page_100[start-6:start])
 slot=st.unpack('>Hi',page_100[start-6:start])
 print(slot)
-number_slot=st.unpack('>H',page_100[0:2])
+number_slot=st.unpack('>H',page_100[0:2])[0]
 print(number_slot)
+page_update('prashasti','astitva',page_100)
+print(page_100[93:98])
+print(st.unpack('>H', page_100[0:2] )[0])
+print(st.unpack('>i',page_100[2:6])[0])
+print(st.unpack('>i', page_100[6:10] )[0])
