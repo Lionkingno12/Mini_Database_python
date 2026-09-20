@@ -22,53 +22,77 @@ bytes_spcae_end=st.pack('>i',free_space_end)
 page_100[2:6]=bytes_spcae_start
 page_100[6:10]=bytes_spcae_end
 def page_insert(value,page):
-    #cell
-    bytes_value=value.encode('utf-8')
-    length=len(bytes_value)
-
-    #header (number_of_slot,free_space_start,free_space_end)
+    found=False
     number_of_slot=st.unpack('>H',page[0:2])[0]
-    free_space_start=st.unpack('>i',page[2:6])[0]
-    free_space_end=st.unpack('>i',page[6:10])[0]
-    new_start=st.pack('>i', free_space_start+6 )
-    new_end=st.pack('>i', free_space_end-length )
-    New_count=number_of_slot+1
-    bytes_slot=st.pack('>H',New_count)
-
-    #check 
-    total_space=free_space_end-free_space_start
-    if total_space<(length+6):
-        print('not enough space remained ')
-        print(f'you need : {length+6} bytes and remaning is : {total_space} bytes')
-        return 
-
-    #slot (length,offset)
-    bytes_length=st.pack('>H',length)
-    offset=free_space_end-length
-    bytes_offset=st.pack('>i',offset)
-
-    #Now adding the data in the page
-
-    #header
-    page[0:2]=bytes_slot
-    page[2:6]=new_start
-    page[6:10]=new_end
-    
-    #slot(length,offset)
-    header_end=10
-    slot_length=6
-    start=(header_end+(number_of_slot*slot_length))
     for i in range(number_of_slot):
         start_of_slot=(10+(i*6))
         slot=st.unpack('>Hi',page[start_of_slot:start_of_slot+6])
         length=slot[0]
         offset=slot[1]
         if  offset==-1:
-            start=start_of_slot
-    page[start:start+slot_length]=bytes_length+bytes_offset
+            found=True
+            slot_number=i
+    if found:
+        free_space_end=st.unpack('>i',page[6:10])[0]
+        free_space_start=st.unpack('>i',page[2:6])
+        bytes_value=value.encode('utf-8')
+        length=len(bytes_value)
+        if free_space_end-free_space_start<length:
+            print(f'not able to insert')
+            return
+        start_of_slot=10+(slot_number*6)
+        slot=st.unpack('>Hi',page[start_of_slot:start_of_slot+6])
+        bytes_length=st.pack('>H',length)
+        offset=free_space_end-length
+        bytes_offset=st.pack('>i',offset)
+        page[offset:offset+length]=bytes_value
+        page[start_of_slot:start_of_slot+6]=bytes_length+bytes_offset
+        current_end=offset
+        bytes_end_space=st.pack('>i',current_end)
+        page[6:10]=bytes_end_space
+        
 
-    #cell
-    page[free_space_end-length:free_space_end]=bytes_value
+    else:
+        #cell
+        bytes_value=value.encode('utf-8')
+        length=len(bytes_value)
+
+        #header (number_of_slot,free_space_start,free_space_end)
+        number_of_slot=st.unpack('>H',page[0:2])[0]
+        free_space_start=st.unpack('>i',page[2:6])[0]
+        free_space_end=st.unpack('>i',page[6:10])[0]
+        new_start=st.pack('>i', free_space_start+6 )
+        new_end=st.pack('>i', free_space_end-length )
+        New_count=number_of_slot+1
+        bytes_slot=st.pack('>H',New_count)
+
+        #check 
+        total_space=free_space_end-free_space_start
+        if total_space<(length+6):
+            print('not enough space remained ')
+            print(f'you need : {length+6} bytes and remaning is : {total_space} bytes')
+            return 
+
+        #slot (length,offset)
+        bytes_length=st.pack('>H',length)
+        offset=free_space_end-length
+        bytes_offset=st.pack('>i',offset)
+
+        #Now adding the data in the page
+
+        #header
+        page[0:2]=bytes_slot
+        page[2:6]=new_start
+        page[6:10]=new_end
+        
+        #slot(length,offset)
+        header_end=10
+        slot_length=6
+        start=(header_end+(number_of_slot*slot_length))
+        page[start:start+slot_length]=bytes_length+bytes_offset
+
+        #cell
+        page[free_space_end-length:free_space_end]=bytes_value
 
 #update the  value
 def page_update(update_value,target,page):
