@@ -115,6 +115,62 @@ def page_update(update_value,target,page):
                 print(slot_number,length_update_value,offset)
     else:
         print('your update value is not found ')
+
+# for deleting a value
+def page_delete(value,page):
+    number_of_slot=st.unpack('>H',page[0:2])[0]
+    slot_number=0
+    word=''
+    found=False
+    while slot_number<number_of_slot and found==False:
+        start=10+(slot_number*6)
+        slot=st.unpack('>Hi',page[start:start+6])
+        length=slot[0]
+        offset=slot[1]
+        word=page[offset:offset+length].decode('utf-8')
+        if word==value:
+            found=True
+        else:
+            slot_number+=1
+    if found:
+        start=10+(slot_number*6)
+        length=0
+        offset=-1
+        bytes_length=st.pack('>H',length)
+        bytes_offset=st.pack('>i',offset)
+        page[start:start+6]=bytes_length+bytes_offset
+    else:
+        print('your word is no where to be found')
+
+#for cleaning the dead space 
+def page_combine(end_space,page):
+    total_number_slot=st.unpack('>H',page[0:2])[0]
+    current_slot=0
+    current_end=end_space
+    while current_slot <total_number_slot:
+        start=(10+(current_slot*6))
+        slot=st.unpack('>Hi',page[start:start+6])
+        length=slot[0]
+        offset=slot[1]
+        if offset==-1:
+            current_slot+=1
+            continue
+        if offset+length==current_end:
+            current_slot+=1
+            current_end=offset
+            continue
+        else:
+            new_offset=current_end-length
+            bytes_offset=st.pack('>i',new_offset)
+            bytes_length=st.pack('>H',length)
+            page[start:start+6]=bytes_length+bytes_offset
+            page[new_offset:new_offset+length]=page[offset:offset+length]
+    free_space_end=st.unpack('>i',page[6:10])[0]
+    if free_space_end!=current_end:
+        free_space_end=current_end
+        bytes_free_space=st.pack('>i',free_space_end)
+        page[6:10]=bytes_free_space
+    
 page_insert('astitva',page_100)
 page_insert('arya',page_100)
 page_insert('abcdefghijklmnopqrstuvwxyz',page_100)
@@ -136,3 +192,14 @@ print(page_100[93:98])
 print(st.unpack('>H', page_100[0:2] )[0])
 print(st.unpack('>i',page_100[2:6])[0])
 print(st.unpack('>i', page_100[6:10] )[0])
+page_delete('arya',page_100)
+start=st.unpack('>i' ,page_100[2:6] )[0]
+end=st.unpack('>i', page_100[6:10] )[0]
+print(start)
+print(end)
+page_combine(100,page_100)
+start=st.unpack('>i' ,page_100[2:6] )[0]
+end=st.unpack('>i', page_100[6:10] )[0]
+print(start)
+print(end)
+print(page_100)
