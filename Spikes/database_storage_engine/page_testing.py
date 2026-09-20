@@ -58,6 +58,13 @@ def page_insert(value,page):
     header_end=10
     slot_length=6
     start=(header_end+(number_of_slot*slot_length))
+    for i in range(number_of_slot):
+        start_of_slot=(10+(i*6))
+        slot=st.unpack('>Hi',page[start_of_slot:start_of_slot+6])
+        length=slot[0]
+        offset=slot[1]
+        if  offset==-1:
+            start=start_of_slot
     page[start:start+slot_length]=bytes_length+bytes_offset
 
     #cell
