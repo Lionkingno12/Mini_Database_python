@@ -145,32 +145,31 @@ def page_delete(value,page):
 #for cleaning the dead space 
 def page_combine(end_space,page):
     total_number_slot=st.unpack('>H',page[0:2])[0]
-    current_slot=0
     current_end=end_space
-    while current_slot <total_number_slot:
+    sort_by_offset=[]
+    for current_slot in range(total_number_slot):
         start=(10+(current_slot*6))
         slot=st.unpack('>Hi',page[start:start+6])
         length=slot[0]
         offset=slot[1]
-        if offset==-1:
-            current_slot+=1
-            continue
-        if offset+length==current_end:
-            current_slot+=1
-            current_end=offset
-            continue
-        else:
-            new_offset=current_end-length
-            bytes_offset=st.pack('>i',new_offset)
-            bytes_length=st.pack('>H',length)
-            page[start:start+6]=bytes_length+bytes_offset
-            page[new_offset:new_offset+length]=page[offset:offset+length]
-    free_space_end=st.unpack('>i',page[6:10])[0]
-    if free_space_end!=current_end:
-        free_space_end=current_end
-        bytes_free_space=st.pack('>i',free_space_end)
-        page[6:10]=bytes_free_space
-    
+        if  offset!=-1:
+            sort_by_offset.append([offset,length,current_slot])
+    sort_by_offset.sort(reverse=True)
+    for i in sort_by_offset:
+        slot_number=i[2]
+        start_of_slot=(10+(slot_number*6))
+        offset=i[0]
+        length=i[1]
+        if current_end-length!=offset :
+            page[current_end-length:current_end]=page[offset:offset+length]
+            offset=current_end-length
+        current_end=offset
+        bytes_offset=st.pack('>i',offset)
+        bytes_length=st.pack('>H',length)
+        page[start_of_slot:start_of_slot+6]=bytes_length+bytes_offset
+    bytes_current_end=st.pack('>i',current_end)
+    page[6:10]=bytes_current_end
+            
 page_insert('astitva',page_100)
 page_insert('arya',page_100)
 page_insert('abcdefghijklmnopqrstuvwxyz',page_100)
