@@ -8,6 +8,8 @@ box[1]=65
 print(hex(box[1]))
 print(bytes([box[1]]))
 box[10:14] = st.pack(">i", 31488484)
+HEADEE=st.Struct('>HHH')
+
 #create a page of 100 bytes 
 #4 thing header , slot ,free space ,cell
 #i will keep header 9 bytes,slot : 6 bytes , cell dynamic bytes 
@@ -34,7 +36,7 @@ def page_insert(value,page):
             slot_number=i
     if found:
         free_space_end=st.unpack('>i',page[6:10])[0]
-        free_space_start=st.unpack('>i',page[2:6])
+        free_space_start=st.unpack('>i',page[2:6])[0]
         bytes_value=value.encode('utf-8')
         length=len(bytes_value)
         if free_space_end-free_space_start<length:
