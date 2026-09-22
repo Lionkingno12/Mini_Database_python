@@ -7,6 +7,10 @@ HEADER=struct.Struct('>HHH') # 2bytes: number of slot , free_space_start, free_s
 SLOT=struct.Struct('>HH') # 2bytes: offset,length
 
 #class
+ 
+class Error(Exception):
+    pass
+
 class page:
     __slots__=('buf',)
 
@@ -27,7 +31,15 @@ class page:
         head=HEADER.unpack_from(self.buf,0)
         return head
     
-    # @property
+    @property
+
+    #reture the remaning space
+    def remaning_space(self):
+        head=self.header
+        free_space_start=head[1]
+        free_space_end=head[2]
+        total_remaning=free_space_end-free_space_start
+        return total_remaning
     
     #create a slot and also change the start free space in haeder 
     def slot(self,id,offset,length):
@@ -94,19 +106,17 @@ class page:
             self.cell_insert_new_slot(bytes_value)
             print('you value is inserted ....')
         else:
-            return print(f'sorry you dont have enough space | remained: {total_remaning} | needed: {required_space}')
+            raise Error(f'sorry you dont have enough space | remained: {total_remaning} | needed: {required_space}')
 
     #delete function we delete the value after taking the slot number 
     def delete(self,id):
         head=self.header
         number_of_slot=head[0]
         if  not ( 0<=id<(number_of_slot) ): 
-            print('yoo have input a worng id which does not exits ')
-            return 
+            raise Error('you have input a worng id which does not exits ')
         offset,length=self.read_slot_value(id)
         if length==0:
-            print('your value is already deleted')
-            return 
+            raise Error('your value is already deleted')
         offset=0
         length=0
         self.slot(id,offset,length)
