@@ -52,8 +52,7 @@ class page:
     def get(self,id):
         offset,length=self.read_slot_value(id)
         cell= self.buf[offset:offset+length]
-
-        return cell.decode('utf-8')
+        return cell
 
     #put the value of cell in the buf with creating new slot
     def cell_insert_new_slot(self,bytes_value):
@@ -84,27 +83,31 @@ class page:
         self.buf[offset:offset+length]=bytes_value
 
     #for now if i want i can expand it and reuse the slot too 
-    def insert(self,value):
+    def insert(self,bytes_value):
         head=self.header
         free_space_start=head[1]
         free_space_end=head[2]
         total_remaning=free_space_end-free_space_start
-        bytes_value=value.encode('utf-8')
         length=len(bytes_value)
         required_space=length+SLOT.size
         if total_remaning>=required_space:
             self.cell_insert_new_slot(bytes_value)
+            print('you value is inserted ....')
         else:
             return print(f'sorry you dont have enough space | remained: {total_remaning} | needed: {required_space}')
 
-
-Page=page.empty(100)
-print(HEADER.size)
-head=Page.header
-print(head[0],head[1],head[2])
-Page.slot(0,100,7)
-print(Page.read_slot_value(0))
-Page.insert('astitva')
-print(Page.read_slot_value(0))
-print(Page.header)
-print( Page.get(0) )
+    #delete function we delete the value after taking the slot number 
+    def delete(self,id):
+        head=self.header
+        number_of_slot=head[0]
+        if  not ( 0<=id<(number_of_slot) ): 
+            print('yoo have input a worng id which does not exits ')
+            return 
+        offset,length=self.read_slot_value(id)
+        if length==0:
+            print('your value is already deleted')
+            return 
+        offset=0
+        length=0
+        self.slot(id,offset,length)
+        print('your value is deleted .....')
