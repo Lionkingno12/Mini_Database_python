@@ -63,6 +63,14 @@ class page:
     #for geting the value of of slot 
     def get(self,id):
         offset,length=self.read_slot_value(id)
+        head=self.header
+        number_of_slot=head[0]
+        if not ( 0<=id<number_of_slot ):
+            raise Error(f'you have entered wrong id ')
+        if number_of_slot==0:
+            raise Error(f'you have not intered anything ')
+        if length==0 :
+            raise Error(f'you have already deleted it  ')
         cell= self.buf[offset:offset+length]
         return cell
 
@@ -117,7 +125,7 @@ class page:
         offset,length=self.read_slot_value(id)
         if length==0:
             raise Error('your value is already deleted')
-        offset=0
+        offset=9999
         length=0
         self.slot(id,offset,length)
         print('your value is deleted .....')

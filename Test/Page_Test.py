@@ -1,4 +1,5 @@
 from Storage.page import page
+from hypothesis import given,strategies as st
 
 
 def test_empty_page():
@@ -28,3 +29,26 @@ def test_hypothesis():
     Page.insert(value1)
     Page.insert(value2)
     Page.insert(value3)
+
+
+@given(st.binary(min_size=100, max_size=500))
+def test_limit_push(value):
+    Page=page.empty(100)
+    Page.insert(value)
+    assert Page.get(0)==value
+
+@given(st.lists(st.binary(min_size=1,max_size=10),min_size=1,max_size=10))
+def test_all_function(value):
+    Page=page.empty(100)
+    #insert
+    for i in value:
+        Page.insert(i)
+
+    #get
+    for slot,values in enumerate(value):
+        assert Page.get(slot)==values
+
+    #delete
+    for slot,values in enumerate(value):
+        Page.delete(slot)
+        assert Page.get(0)==b''
