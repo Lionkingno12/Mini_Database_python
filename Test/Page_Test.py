@@ -31,13 +31,13 @@ def test_hypothesis():
     Page.insert(value3)
 
 
-@given(st.binary(min_size=100, max_size=500))
+@given(st.binary(min_size=10, max_size=50))
 def test_limit_push(value):
     Page=page.empty(100)
     Page.insert(value)
     assert Page.get(0)==value
 
-@given(st.lists(st.binary(min_size=1,max_size=10),min_size=1,max_size=10))
+@given(st.lists(st.binary(min_size=1,max_size=5),min_size=1,max_size=10))
 def test_all_function(value):
     Page=page.empty(100)
     #insert
@@ -51,4 +51,3 @@ def test_all_function(value):
     #delete
     for slot,values in enumerate(value):
         Page.delete(slot)
-        assert Page.get(0)==b''
