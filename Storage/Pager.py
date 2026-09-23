@@ -25,9 +25,9 @@ class Pager:
         return n*PAGE_SPACE 
 
     #create space for new pages to come 
-    @property
     def allocate_page(self):
         file_pointer=self.start_location(self.number_of_pages)
         self.file.seek(file_pointer)
         self.file.write(b'\x00'*PAGE_SPACE)
-    
+        self.number_of_pages+=1
+        return self.number_of_pages-1
