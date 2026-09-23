@@ -1,10 +1,11 @@
 #Libraries
 import struct
+from Storage.constants import PAGE_SPACE,HEADER,SLOT
 
 #Structure
-PAGE_SPACE=4096
-HEADER=struct.Struct('>HHH') # 2bytes: number of slot , free_space_start, free_space_end
-SLOT=struct.Struct('>HH') # 2bytes: offset,length
+# PAGE_SPACE=4096
+# HEADER=struct.Struct('>HHH') # 2bytes: number of slot , free_space_start, free_space_end
+# SLOT=struct.Struct('>HH') # 2bytes: offset,length
 
 #class
  
