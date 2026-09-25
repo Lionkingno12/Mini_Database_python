@@ -1,0 +1,31 @@
+pager.py
+
+    imports
+        os
+
+    constants
+        PAGE_SIZE           -> imported from your shared constants file
+
+    class Pager
+
+        remembers
+            the path to the file
+            the open file object
+            num_pages           -> how many pages the file holds right now
+
+        setting up
+            __init__(path)      -> open (or create) the file, count its pages
+
+        private helpers
+            _position(page_no)       -> where page N starts: page_no × PAGE_SIZE
+            _check_page_no(page_no)  -> raise if page_no is not between 0 and num_pages − 1
+
+        the five jobs
+            allocate_page()           -> make a new blank page at the end, return its number
+            read_page(page_no)        -> return that page's 4096 bytes as a bytearray
+            write_page(page_no, buf)  -> save 4096 bytes into that page
+            sync()                    -> force everything onto the real disk
+            close()                   -> sync, then close the file
+
+        optional, nice to have
+            __enter__ / __exit__      -> lets you write `with Pager(path) as pager:`
