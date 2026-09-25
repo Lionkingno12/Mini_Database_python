@@ -61,6 +61,11 @@ class page:
         slot_offset=slot[0]
         return slot_offset,slot_length
 
+    #return the buf
+    @property
+    def return_buf(self):
+        return self.buf
+
     #for geting the value of of slot 
     def get(self,id):
         offset,length=self.read_slot_value(id)

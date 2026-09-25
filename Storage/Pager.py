@@ -62,6 +62,9 @@ class Pager:
         os.fsync(self.file.fileno())
         self.file.close()
 
+    #return the number of value
+    def total_pages(self):
+        return self.number_of_pages
 
 
 pager=Pager('arya.db')
