@@ -8,8 +8,6 @@ def test_pager_page(value):
     pager=Pager('arya.db')
     Page=page.empty()
     number=pager.allocate_page()
-    pager.close()
-
 
     #insert
     for i in value:
@@ -22,4 +20,7 @@ def test_pager_page(value):
     #pager
     pager.write_page(number,Page.return_buf)  
     assert pager.read_page(number)==Page.return_buf
+    page_store=Page.return_buf
     pager.close()
+    pager=Pager('arya.db')
+    assert pager.read_page(number)==page_store
