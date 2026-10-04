@@ -50,6 +50,18 @@ class Node_leaf:
         self.value=[]
         self.is_leaf=is_leaf
         self.next=None
+
+root=Node_leaf()
+root.keys=[30]
+child1=Node()
+child1.is_leaf=True
+child2=Node()
+child2.is_leaf=True
+child1.keys=[10,20]
+child2.keys=[30,40]
+child1.next=child2
+root.children=[child1,child2]
+
 def insert(value,key_value):
     while not node.is_leaf:
         i=0
@@ -63,3 +75,4 @@ def insert(value,key_value):
         raise Error('your value is not present in the b+ tree ') 
     node.keys.insert(i,key_value)
     node.value.insert(i,value)
+    return node.keys[i],node.value.insert[i]
