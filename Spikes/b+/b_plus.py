@@ -69,8 +69,8 @@ root.children=[child1,child2]
 child1.parent=root
 child2.parent=root
 
-def split_node(node):
-    new_node=Node_leaf()
+def split_leaf_node(node):
+    new_node=Node_leaf(True)
     new_node.parent=node.parent
     node.next=new_node
     old_node_length_key=len(node.value)
@@ -88,6 +88,12 @@ def split_node(node):
 
     return node,new_node
 
+def split_parent(node):
+    new_node=Node_leaf(False)
+    # new_node.parent=node.
+    pass
+
+
 def insert(node,value,key_value):
     while not node.is_leaf:
         i=0
@@ -101,13 +107,20 @@ def insert(node,value,key_value):
     node.value.insert(i,value)
     print(node.keys,node.value)
     if len( node.value )>max_node:
-        node1,node2=split_node(node)
+        node1,node2=split_leaf_node(node)
         print(node1.value,node1.keys)
         print(node2.value,node2.keys)
         new_parent_key=node2.keys[0]
         parent=node1.parent
         j=0
-        if len(parent.val)
+        while j<len(parent.keys)and parent.keys[j]<new_parent_key:
+            j+=1
+        parent.keys.insert(j,new_parent_key)
+        parent.children.insert(j+1,node2)
+        print(parent.keys)
+        print(parent.children)
+        if len(parent.keys)>max_node:
+            pass
         return 
     return node.keys[i],node.value[i]
 insert(root,'falak',25)
@@ -115,3 +128,5 @@ insert(root,'joker',5)
 insert(root,'mummy',45)
 insert(root,'daddy',35)
 insert(root,'sukuna',55)
+insert(root,'sourabh',100)
+insert(root,'i love you',100)
