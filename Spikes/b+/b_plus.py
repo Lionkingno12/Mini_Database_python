@@ -107,9 +107,7 @@ def insert(node,value,key_value):
         new_parent_key=node2.keys[0]
         parent=node1.parent
         j=0
-        while parent.keys<new_parent_key:
-            j+=1
-            
+        if len(parent.val)
         return 
     return node.keys[i],node.value[i]
 insert(root,'falak',25)
