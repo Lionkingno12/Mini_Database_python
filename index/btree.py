@@ -38,7 +38,21 @@ class btree:
         self.insert_value_in_leaf(node,value,key)
         print(node.key)
         print(node.value)
-    def split_node(self,)
+    def split_node(self,node):
+        mid_key=len(node.key)//2
+        new_node=Node()
+        new_node.key=node.key[mid_key::]
+        new_node.children=node.children[mid_key::]
+        node.key=node.key[:mid_key]
+        node.children=node.children[mid_key::]
+        return node,new_node
+    def split_leaf_node(self,node):
+        mid_key=len(node.key)//2
+        new_node=Node(True)
+        new_node.key=node.key[mid_key::]
+        new_node.value=node.key[mid_key::]
+        node.key=node.key[:mid_key]
+        node.value=node.key[:mid_key]
 storage=btree()
 storage.insert('astitva',5)
 storage.insert('arya',15)
