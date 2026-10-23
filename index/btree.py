@@ -36,6 +36,8 @@ class btree:
     def insert(self,value,key):
         node=self.find_leaf(key)
         self.insert_value_in_leaf(node,value,key)
+        if len(node.key)>self.max_leaf:
+            self.split(node)
         print(node.key)
         print(node.value)
     def split_node(self,node):
@@ -56,9 +58,18 @@ class btree:
         new_node.next=node.next
         node.next=new_node
         return node,new_node
+    def split(self,root):
+        if root.is_leaf:
+            node,new_node=self.split_leaf_node(root)
+            print(node.key,new_node.key)
+            return node,new_node
+        node,new_node=self.split_node(root)
+        print(node.key,new_node.key)
+        return node,new_node
 storage=btree()
 storage.insert('astitva',5)
 storage.insert('arya',15)
 storage.insert('mummy',25)
 storage.insert('dady',35)
 storage.insert('mudit',5)
+storage.insert('gojo',45)
